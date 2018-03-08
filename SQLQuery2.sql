@@ -121,6 +121,44 @@ FROM books
 WHERE Themes  like 'Программирование'  and (Name not like '%Pascal%' and Name not like '%Delphi%')
 ORDER BY Themes
 
---19. Вставить в таблицу следующие книги:
-INSERT INTO books ( name, yearpress, themes, author, press, comment, quantity )
-VALUES ('SQL', 2004, 'Базы данных', 'Генник', 'Питер', 'Карманный справочник', 3);
+--19. Вставить в таблицу следующие книги: 
+--INSERT INTO books ( name, Pages, YearPress, Themes, Author, Press, Comment,Quantity )
+INSERT INTO books ( name, YearPress, Themes, Author, Press, Comment,Quantity )
+VALUES ('TCP/IP',2005, 'Сети', 'Хант', 'Питер','3-е издание', 1);
+INSERT INTO books ( name, Pages ,YearPress, Themes, Author, Press, Comment,Quantity )
+VALUES ('C++ Базовый курс',620,2005, 'Программирование', 'Шилдт', 'Вильямс','3-е издание', 2);
+INSERT INTO books ( name, YearPress, Themes, Author,  Comment,Quantity )
+VALUES ('Flash MX 2004',2005, 'Web-дизайн', 'Кертис','Самоучитель', 1);
+INSERT INTO books ( name, Pages ,YearPress, Themes, Author, Press, Comment,Quantity )
+VALUES ('С/C++',464,2005, 'Программирование', 'Павловская', 'Питер','Учебник для ВУЗов', 2);
+
+
+
+--20. Для книги автора Кертиса установить издательство «Вильямс».
+UPDATE books SET Press = 'Вильямс'
+WHERE Author='Кертис';
+
+--21. Для книги по Flash установить количество экземпляров, равное 5.
+UPDATE books SET Quantity =5
+WHERE Name like '%Flash%';
+
+--22. Для книг, в названии которых есть «3D», установить тематику 3D-графика.
+UPDATE books SET Themes ='3D-графика'
+WHERE Name like '%3D%';
+
+--23. Удалить из таблицы все записи для авторов с именем, которое начинается на букву 'А'.
+DELETE 
+FROM books
+WHERE  name Like 'А%';
+
+--24. Отобразить книги, о количестве страниц которых ничего неизвестно.
+SELECT Name as [Названия книг], Pages as [Количество страниц]
+FROM books
+WHERE Pages is NULL
+
+--25. Удалить книги, которые были изданы до 2000, 
+--за исключением книг издательства «Питер».
+DELETE 
+FROM books
+WHERE  YearPress < 2000 and Press not like 'Питер';
+
