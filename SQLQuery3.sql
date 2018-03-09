@@ -166,19 +166,61 @@ GROUP BY Themes
 
 --14. Ќайти среднюю цену книг, выпущенных издательствами весной 1999 года, дл€ каждого издательства.
 
-SELECT Izd, ROUND( count(n)/(SELECT CAST(count(n) AS float) FROM books)*100,2)
+SELECT Izd,  (sum(price)/count(price)) as [—редн€€ цена]
 FROM books
-WHERE [Date] like '1999-03-%'
+WHERE [Date] BETWEEN '1999-03-01 00:00:00'
+  AND '1999-05-31 00:00:00'
 GROUP BY Izd
 
 --15. ¬ывести книгу, выпущенную наибольшим тиражом (2 способа).
+Select *
+from books
+WHERE Pressrun = (
+					select max(Pressrun)
+					from books
+
+					)
+
+Select TOP 1 *
+from books
+ORDER BY Pressrun DESC 
 
 --16. ¬ывести издательства, у которых число выпущенных книг превышает 5% от общего числа книг.
 
+
+Select izd ,sum(Pressrun)
+from books 
+GROUP BY Izd
+HAVING sum(Pressrun) > (
+						select sum(Pressrun) * 5 /100
+						from books
+						
+						)
+ORDER BY 2 DESC
+
 --17. ¬ывести книгу, в коде которой присутствуют ровно 2 семерки.
 
+Select *
+from books
+Where Code  like  '%7%7%'and Code not like  '%7%7%7%'
+order by Code desc
 --18. ¬ывести издательства, из букв которых можно собрать слово Ђлакї.
+Select  izd
+from books
+Where  izd like '%к%'and   izd like '%л%'and   izd like '%а%'
+GROUP BY izd
 
---19. ¬ывести книги, названи€ которых не содержат английских букв, с числом страниц, кратным 2.
+
+--19. ¬ывести книги, названи€ которых не содержат английских букв, с числом страниц, кратным 2. 
+-- –аботает правильно, просто PC написано русскими буквами
+
+select * 
+from books
+WHERE [Name] not like '%[A-Z]%' and  CAST(Pages AS int)  % 2 = 0
+
 
 --20. ¬ывести количество книг, у которых не указана дата выпуска.
+
+select count(n)
+from books
+where [Date] is NULL
