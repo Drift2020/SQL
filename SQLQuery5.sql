@@ -74,14 +74,44 @@ from Country,Continent
 where Country.Debut > 0 and Country.ContinentId = Continent.Id
 group by Continent.Name
 
---10. Отобразить для каждого языка количество стран, в которых этот язык является официальным.
+--10. Отобразить для каждого языка количество стран, в которых этот язык является официальным.????????????????????????????
 
 select Language.Name , count(Country.Name)
-from Language, Country
-where Language.Id = Country.
+from Language, Country, CountryLanguage
+where Language.id = CountryLanguage.LanguageId -and Country.ContinentId = CountryLanguage.CountryId
+group by Language.Name
 
 --11. Отобразить африканскую страну, территория которой наименьшая.
+
+select  * 
+from Country, Continent
+where Country.Territory = (
+							select min(Country.Territory) 
+							from Country where Continent.Name = 'Африка' 
+							and Continent.Id = Country.ContinentId)
+
+							and  Continent.Name = 'Африка' and Continent.Id = Country.ContinentId
+
 --12. Отобразить для каждой валюты количество стран, в которых эта валюта является национальной.
---13. Отобразить наиболее распространенный язык и указать количество стран, в которых он является официальным.
+
+select Currency.name , count(Country.name)
+from Currency,Country
+where Country.CurrencyId=Currency.Id
+group by Currency.Name
+
+--13. Отобразить наиболее распространенный язык и указать количество стран, в которых он является официальным.??????????????????????????
+
+select Language.Name, count(Country.Name)
+from Language, Country
+where Language.id = (select max(Language.name) from Language) 
+
+
 --14. Отобразить континент, у которого самый высокий суммарный показатель по чемпионским титулам.
+
+select Continent.Name, sum(Country.Champion)
+from Continent, Country
+wh
+group by Continent.Name
 --15. Отобразить наиболее распространенный язык среди стран европейского и африканского континентов.
+
+
