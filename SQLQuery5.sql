@@ -130,11 +130,15 @@ HAVING  sum(Country.Champion) =  (select top 1 sum(Country.Champion)
 --15. Отобразить наиболее распространенный язык среди стран европейского и африканского континентов.
 
 
-select Language.Name , count(Country.Name)
+select Language.Name,count(Country.Name)
 from Language, Country, CountryLanguage,Continent
-where Country.id = CountryLanguage.CountryId and Language.Id = CountryLanguage.LanguageId and Country.ContinentId = Continent.Id and (Continent.Name like 'Европа' or Continent.Name like  'Африка')
+where Country.id = CountryLanguage.CountryId 
+											and Language.Id = CountryLanguage.LanguageId 
+											and Country.ContinentId = Continent.Id 
+											and (Continent.Name like 'Европа' or Continent.Name like  'Африка')
 group by Language.Name
-HAVING  count(Country.Name) =  (select top 1 count(Country.Name)
+
+HAVING  count(Country.Name) =  (select  count(Country.Name)
 								from Language, Country, CountryLanguage,Continent
 								where Country.id = CountryLanguage.CountryId and Language.Id = CountryLanguage.LanguageId and Country.ContinentId = Continent.Id and (Continent.Name like 'Европа' or Continent.Name like  'Африка')
 								group by Language.Name
