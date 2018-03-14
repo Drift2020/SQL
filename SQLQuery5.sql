@@ -74,11 +74,11 @@ from Country,Continent
 where Country.Debut > 0 and Country.ContinentId = Continent.Id
 group by Continent.Name
 
---10. Отобразить для каждого языка количество стран, в которых этот язык является официальным.????????????????????????????
+--10. Отобразить для каждого языка количество стран, в которых этот язык является официальным.
 
 select Language.Name , count(Country.Name)
 from Language, Country, CountryLanguage
-where Language.id = CountryLanguage.LanguageId -and Country.ContinentId = CountryLanguage.CountryId
+where Country.id = CountryLanguage.CountryId and Language.Id = CountryLanguage.LanguageId
 group by Language.Name
 
 --11. Отобразить африканскую страну, территория которой наименьшая.
@@ -101,17 +101,43 @@ group by Currency.Name
 
 --13. Отобразить наиболее распространенный язык и указать количество стран, в которых он является официальным.??????????????????????????
 
-select Language.Name, count(Country.Name)
-from Language, Country
-where Language.id = (select max(Language.name) from Language) 
+select Language.Name , count(Country.Name)
+from Language, Country, CountryLanguage
+where Country.id = CountryLanguage.CountryId and Language.Id = CountryLanguage.LanguageId
+group by Language.Name
+HAVING  count(Country.Name) =  (select top 1 count(Country.Name)
+								from Language, Country, CountryLanguage
+								where Country.id = CountryLanguage.CountryId and Language.Id = CountryLanguage.LanguageId
+								group by Language.Name
+								order by 1 desc
+								)
+
 
 
 --14. Отобразить континент, у которого самый высокий суммарный показатель по чемпионским титулам.
 
 select Continent.Name, sum(Country.Champion)
 from Continent, Country
-wh
+where Country.ContinentId = Continent.Id 
 group by Continent.Name
+HAVING  sum(Country.Champion) =  (select top 1 sum(Country.Champion)
+																		from Continent, Country
+																		where Country.ContinentId = Continent.Id
+																		group by Continent.Name
+																		order by 1 desc
+																		)
+
 --15. Отобразить наиболее распространенный язык среди стран европейского и африканского континентов.
 
+
+select Language.Name , count(Country.Name)
+from Language, Country, CountryLanguage,Continent
+where Country.id = CountryLanguage.CountryId and Language.Id = CountryLanguage.LanguageId and Country.ContinentId = Continent.Id and (Continent.Name like 'Европа' or Continent.Name like  'Африка')
+group by Language.Name
+HAVING  count(Country.Name) =  (select top 1 count(Country.Name)
+								from Language, Country, CountryLanguage,Continent
+								where Country.id = CountryLanguage.CountryId and Language.Id = CountryLanguage.LanguageId and Country.ContinentId = Continent.Id and (Continent.Name like 'Европа' or Continent.Name like  'Африка')
+								group by Language.Name
+								order by 1 desc
+								)
 
