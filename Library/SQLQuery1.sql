@@ -180,7 +180,7 @@ Groups.Id_Faculty = Faculties.Id
 group by Faculties.Name
 
 --14. Отобразить самый читающий факультет и самую читающую кафедру.
-WITH Faculty_proc as (select count (Books.Name)*100/(select count(Faculties.Name)as count
+WITH Faculty_proc as (select Faculties.Name, count (Books.Name)*100/(select count(Faculties.Name)as count
 														from Faculties inner join Groups
 														inner join Students 
 														inner join S_Cards 
@@ -196,32 +196,161 @@ Groups.Id_Faculty = Faculties.Id
 group by Faculties.Name)
 
 
-WITH Departments_proc as (select count (Books.Name)*100/(select count(Faculties.Name)as count
-														from Faculties inner join Groups
-														inner join Students 
-														inner join S_Cards 
+, Departments_proc as ( select  Departments.Name,count (Books.Name)*100/(select count(Departments.Name)as count
+														from Departments inner join Teachers
+													
+														inner join T_Cards 
 														inner join Books on
-														Books.Id = S_Cards.Id_Book on
-														S_Cards.Id_Student = Students.Id on
-														Students.Id_Group = Groups.Id on
-														Groups.Id_Faculty = Faculties.Id
+														Books.Id = T_Cards.Id_Book on
+														T_Cards.Id_Teacher = Teachers.Id on
+														Teachers.Id_Dep = Departments.Id
 														) as [count]
-from Faculties inner join Groups inner join Students inner join S_Cards inner join Books on
-Books.Id = S_Cards.Id_Book on S_Cards.Id_Student = Students.Id on Students.Id_Group = Groups.Id on
-Groups.Id_Faculty = Faculties.Id
-group by Faculties.Name)
+from Departments inner join Teachers inner join T_Cards inner join Books on
+Books.Id = T_Cards.Id_Book on
+T_Cards.Id_Teacher = Teachers.Id on
+Teachers.Id_Dep = Departments.Id
+group by Departments.Name)
 
 
+Select Faculty_proc.*,'Факультет'
+from Faculty_proc
+where Faculty_proc.count = (select max(Faculty_proc.count)
+								from Faculty_proc
+							)
+union
+
+Select Departments_proc.*,'Департамент'
+from Departments_proc
+where Departments_proc.count = (select max(Departments_proc.count)
+								from Departments_proc
+							)
 
 
 --15. Показать автора (ов) самых популярных книг среди препода-вателей и студентов.
 
+WITH Autors_Popular_S as (select Authors.FirstName+' '+Authors.LastName as Name, count (Books.Name) as [count]
+														from  Authors
+														inner join Books 
+														inner join S_Cards 
+														inner join Students on
+														Students.Id = S_Cards.Id_Student on
+														S_Cards.Id_Book = Books.Id on
+														Books.Id_Author = Authors.id
+														group by Authors.FirstName+' '+Authors.LastName
+														) ,
+Autors_Popular_T as (select Authors.FirstName+' '+Authors.LastName as Name, count (Books.Name) as [count]
+														from  Authors
+														inner join Books 
+														inner join T_Cards 
+														inner join Teachers on
+														Teachers.Id = T_Cards.Id_Teacher on
+														T_Cards.Id_Book = Books.Id on
+														Books.Id_Author = Authors.id
+														group by Authors.FirstName+' '+Authors.LastName
+														) 
+
+Select Autors_Popular_S.* , 'Студенты'
+from Autors_Popular_S
+where Autors_Popular_S.count= (select max(Autors_Popular_S.count) from Autors_Popular_S)
+
+union
+
+Select Autors_Popular_T.*,  'Преподователи'
+from Autors_Popular_T
+where Autors_Popular_T.count= (select max(Autors_Popular_T.count) from Autors_Popular_T)
+
 --16. Отобразить названия самых популярных книг среди препода-вателей и студентов.
+
+WITH Books_Popular_S as (select Books.Name as Name, count (Books.Name) as [count]
+														from   Books 
+														inner join S_Cards 
+														inner join Students on
+														Students.Id = S_Cards.Id_Student on
+														S_Cards.Id_Book = Books.Id 
+														group by Books.Name
+														) ,
+Books_Popular_T as (select Books.Name as Name, count (Books.Name) as [count]
+														from   Books 
+														inner join T_Cards 
+														inner join Teachers on
+														Teachers.Id = T_Cards.Id_Teacher on
+														T_Cards.Id_Book = Books.Id 
+														group by Books.Name
+														) 
+
+Select Books_Popular_S.* , 'Студенты'
+from Books_Popular_S
+where Books_Popular_S.count= (select max(Books_Popular_S.count) from Books_Popular_S)
+
+union
+
+Select Books_Popular_T.*,  'Преподователи'
+from Books_Popular_T
+where Books_Popular_T.count= (select max(Books_Popular_T.count) from Books_Popular_T)
+
 
 --17. Показать всех студентов и преподавателей дизайнеров.
 
+
+Select Students.FirstName+' '+Students.LastName, Faculties.Name
+from Students inner join Groups inner join Faculties on Faculties.Id = Groups.Id_Faculty on Groups.Id = Students.Id_Group
+where Faculties.Name like '%дизайна%'
+union
+
+Select Teachers.FirstName+' '+Teachers.LastName, Departments.Name
+from Teachers inner join  Departments on Departments.Id  = Teachers.Id_Dep
+where Departments.Name like '%дизайна%'
+
 --18. Показать всю информацию о студентах и преподавателях,бравших книги.
 
+SELECT Students.FirstName + '  ' + Students.LastName, Students.Term, Groups.Name,Faculties.Name
+FROM Books inner JOIN S_cards inner JOIN Students inner join Groups inner join  Faculties
+on Faculties.Id = Groups.Id_Faculty on Groups.id= Students.Id_Group
+ON S_cards.Id_student = Students.Id ON Books.Id = S_cards.Id_book;
+
+union 
+
+SELECT Teachers.FirstName + '  ' + Teachers.LastName,0 ,' ',Departments.Name
+FROM Books inner JOIN T_cards inner JOIN Teachers inner join Departments 
+on Departments.Id = Teachers.Id_Dep on Teachers.Id= T_Cards.Id_Teacher
+ON  Books.Id = T_cards.Id_book;
 --19. Показать книги, которые брали и преподаватели и студенты.
 
+WITH Books_Popular_S as (select Books.* 
+						from   Books 
+						inner join S_Cards 
+						inner join Students on
+						Students.Id = S_Cards.Id_Student on
+						S_Cards.Id_Book = Books.Id 
+						
+						) ,
+Books_Popular_T as (select Books.*
+					from   Books 
+					inner join T_Cards 
+					inner join Teachers on
+					Teachers.Id = T_Cards.Id_Teacher on
+					T_Cards.Id_Book = Books.Id 					
+					) 
+
+Select Books.Name
+from Books_Popular_T inner join Books inner join Books_Popular_S on Books_Popular_S.Id=Books.Id on Books.Id = Books_Popular_T.Id
+
+
 --20. Показать сколько книг выдал каждый из библиотекарей.
+
+WITH Student_count as (
+select Libs.Id  , count(S_Cards.Id_Book) as count
+from  Libs inner join S_Cards
+on S_Cards.Id_Lib=Libs.Id 
+Group by Libs.Id  )
+
+
+, Teachers_count as (
+select Libs.Id , count(T_Cards.Id_Book) as count
+from  Libs inner join T_Cards
+on T_Cards.Id_Lib=Libs.Id 
+Group by Libs.Id  )
+
+
+select Libs.FirstName+' '+Libs.LastName , Student_count.count+Teachers_count.count
+from  Student_count inner join Libs inner join Teachers_count on Teachers_count.Id = Libs.Id on Libs.Id = Student_count.Id
