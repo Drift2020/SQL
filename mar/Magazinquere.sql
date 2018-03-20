@@ -1,15 +1,19 @@
---¬ывести самые дорогие продукты
+--¬ывести самые дорогие продукты из разных фирм
 
-Select Product.Name , Firm.Name , Price.Price
-from Product, Firm,Price
+WITH Max_prices AS
+(select Firm.id,  max(Price.Price) as max_price
+ from Price,Firm,Product
+ where Product.FirmID = Firm.ID and
+ Price.ProductID=Product.ID
+ group by Firm.ID)
+
+Select Product.Name , max(Price.Price)
+from Product, Firm,Price,Max_prices
 where Product.FirmID = Firm.ID and
-		Price.ProductID=Product.ID
-group by  Product.Name, Firm.Name , Price.Price
-having Price.Price=(select  max(Price.Price) 
-					from Price,Firm,Product
-					where Product.FirmID = Firm.ID and
-					Price.ProductID=Product.ID
-					group by Firm.Name
-					)
+		Price.ProductID=Product.ID and
+		Max_prices.max_price = Price.Price and
+		max_prices.ID = Product.FirmID
+group by  Product.Name
+
 
 
