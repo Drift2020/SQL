@@ -64,7 +64,19 @@ select Teachers.FirstName +' '+ Teachers.LastName as '‘»ќ', Books.Name
 from Books inner join T_Cards inner join Teachers on Teachers.Id = T_Cards.Id_Teacher on T_Cards.Id_Book = Books.Id
 
 --9. ¬ывести самого попул€рного автора(ов) среди студентов и количе-ство книг этого автора, вз€тых в библиотеке.
-10. ¬ывести самого попул€рного автора(ов) среди преподавате-лей и количество книг этого автора, вз€тых в библиотеке.
+
+
+WITH Max_books AS
+(select count(S_Cards.DateOut) as [count]
+								from S_Cards inner join Books inner join Authors on Authors.Id = Books.Id_Author on Books.Id = S_Cards.Id_Student
+								group by  Authors.FirstName+' '+Authors.LastName)
+
+select Authors.FirstName+' '+Authors.LastName as 'јвтор' , count(S_Cards.DateOut)
+from S_Cards inner join Books inner join Authors on Authors.Id = Books.Id_Author on Books.Id = S_Cards.Id_Student 
+--where max(Max_book.count)= count(S_Cards.DateOut)
+group by  Authors.FirstName+' '+Authors.LastName
+
+--10. ¬ывести самого попул€рного автора(ов) среди преподавате-лей и количество книг этого автора, вз€тых в библиотеке.
 11. ¬ывести самую попул€рную(ые) тематику(и) среди студентов и преподавателей.
 12. ќтобразить количество преподавателей и студентов, посе-тивших библиотеку.
 13. ≈сли считать общее количество книг в библиотеке за 100%, то необходимо подсчитать, сколько книг (в процентном отношении) брал каждый факультет.
