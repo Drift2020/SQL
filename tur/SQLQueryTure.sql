@@ -64,11 +64,25 @@ Resorts.ID = Tour_Resorts_link.ResortsID on
 Tour_Resorts_link.TourID = Tour.ID
 
 --Какие виды отдыха в каких городах будут
-
-
-
-Select Tour.Name as 'Тур', Country.Name as'Страна', City.Name as 'Город'
+WITH Type_of_Rest as (
+Select Types_of_rest_Resortsl_Link.Types_of_restID as [ID], Types_of_rest.Name as [Type],Resorts.id as [ID_Resorts]
 from Tour inner join Tour_Resorts_link 
+inner join Resorts 
+inner join Types_of_rest_Resortsl_Link 
+inner join Types_of_rest on
+Types_of_rest.ID= Types_of_rest_Resortsl_Link.Types_of_restID on 
+Types_of_rest_Resortsl_Link.ResortsID = Resorts.id on 
+Resorts.ID = Tour_Resorts_link.ResortsID on 
+Tour_Resorts_link.TourID = Tour.ID
+
+)
+
+
+Select Tour.Name as 'Тур', Country.Name as'Страна', City.Name as 'Город' ,Type_of_Rest.Type as 'Вид отдыха'
+from 
+Tour 
+inner join Tour_Resorts_link 
+inner join Type_of_Rest 
 inner join Resorts 
 inner join Country 
 inner join Country_City_link
@@ -76,5 +90,7 @@ inner join City on
 City.ID = Country_City_link.CityID on
 Country.ID = Country_City_link.CountryID on
 Country.ID = Resorts.CountryID on
-Resorts.ID = Tour_Resorts_link.ResortsID on
-Tour_Resorts_link.TourID = Tour.ID
+
+Resorts.ID = Type_of_Rest.ID_Resorts on
+Type_of_Rest.ID_Resorts = Tour_Resorts_link.ResortsID on
+Tour_Resorts_link.TourID = Tour.ID 
