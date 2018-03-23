@@ -24,7 +24,8 @@ Name varchar(30) not null, ------------------------------
 Head varchar(20),
 Building char(5),
 Fund numeric(7,2),
-constraint KEY_FACU foreign key(id_faculty) references FACULTY (id) on delete cascade on update cascade 
+constraint KEY_FACU foreign key(id_faculty) references FACULTY (id) on delete cascade on update cascade ,
+constraint CONSTRAINT_NAME unique (Name, id_faculty)
 )
 
 exec sp_bindrule 'Plus_Fund', 'DEPARTMENT.Fund'
@@ -60,12 +61,14 @@ go
 create table SGROUP(
 id int not null identity(1,1) primary key,
 id_department int ,
-Num NUMERIC(3) unique,  ---------------------------------
+Num NUMERIC(3),  ---------------------------------
 Kurs NUMERIC(1) not null check (Kurs>=1 and Kurs<=5),
 Quantity NUMERIC(2) check (Quantity>=1 and Quantity<=50),
 Rating NUMERIC(3) check (Rating>=0 and Quantity<=100),
 id_teacher int ,
  constraint KEY_DEP foreign key(id_department) references DEPARTMENT (id),
   constraint KEY_TEAC foreign key(id_teacher) references TEACHER (id),
+  constraint CONSTRAINT_num unique (Num, Kurs, id_department)
 )
 go
+
