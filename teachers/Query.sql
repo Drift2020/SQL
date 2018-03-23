@@ -46,7 +46,7 @@ alter table TEACHER alter column Salary NUMERIC(6,2)
 
 go
 --7. Добавить в таблицу «TEACHER» следующее ограничение: зарплатане должна быть ниже 1000, но и не должна превышать 5000.
-alter table TEACHER add check (Salary > 10 and Salary < 40) 
+alter table TEACHER add check (Salary > 1000 and Salary < 5000) 
 
 go
 --8. Переименовать столбец Tel на Phone.
