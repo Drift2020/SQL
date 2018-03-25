@@ -43,15 +43,15 @@ id int not null identity(1,1) primary key,
 id_department int not null unique,
 Name varchar(30) not null,
 IDCode char (10) unique,
-Tel char(7),
 id_post int unique,
+Tel char(7),
 Salary numeric(6,2),
 Rise NUMERIC(6,2) ,
 HireDate DATETIME,
 Chief int unique,
 constraint KEY_DEP foreign key(id_department) references DEPARTMENT (id),
 constraint KEY_CHI foreign key(Chief) references TEACHER (id),
-constraint KEY_post foreign key(id_post) references TEACHER (id)
+constraint KEY_post foreign key(id_post) references POST (id)
 )
 
 alter table TEACHER add check (Year(HireDate)>1990and Day(HireDate)>=1 and Month(HireDate)>=1 ) 
@@ -126,3 +126,13 @@ constraint KEY_sub foreign key(id_subject) references SUBJECT (id)  ON DELETE SE
 go
 
 
+--SET IDENTITY_INSERT [dbo].[FACULTY] ON
+--SET IDENTITY_INSERT [dbo].[DEPARTMENT] ON
+--SET IDENTITY_INSERT [dbo].[POST] ON
+--SET IDENTITY_INSERT [dbo].[TEACHER] ON
+--SET IDENTITY_INSERT [dbo].[SGROUP] ON
+--SET IDENTITY_INSERT [dbo].[ROOM] ON
+--SET IDENTITY_INSERT [dbo].[SUBJECT] ON
+--SET IDENTITY_INSERT [dbo].[LECTURE_TYPE] ON
+--SET IDENTITY_INSERT [dbo].[LECTURE] ON
+--GO
