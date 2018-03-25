@@ -44,12 +44,14 @@ id_department int not null unique,
 Name varchar(30) not null,
 IDCode char (10) unique,
 Tel char(7),
+id_post int unique,
 Salary numeric(6,2),
 Rise NUMERIC(6,2) ,
 HireDate DATETIME,
 Chief int unique,
 constraint KEY_DEP foreign key(id_department) references DEPARTMENT (id),
-constraint KEY_CHI foreign key(Chief) references TEACHER (id)
+constraint KEY_CHI foreign key(Chief) references TEACHER (id),
+constraint KEY_post foreign key(id_post) references TEACHER (id)
 )
 
 alter table TEACHER add check (Year(HireDate)>1990and Day(HireDate)>=1 and Month(HireDate)>=1 ) 
@@ -64,11 +66,63 @@ id_department int ,
 Num NUMERIC(3),  ---------------------------------
 Kurs NUMERIC(1) not null check (Kurs>=1 and Kurs<=5),
 Quantity NUMERIC(2) check (Quantity>=1 and Quantity<=50),
-Rating NUMERIC(3) check (Rating>=0 and Quantity<=100),
+Rating NUMERIC(3) check (Rating>=0 and Rating<=100),
 id_teacher int ,
- constraint KEY_DEP foreign key(id_department) references DEPARTMENT (id),
+ constraint KEY_DEP1 foreign key(id_department) references DEPARTMENT (id),
   constraint KEY_TEAC foreign key(id_teacher) references TEACHER (id),
-  constraint CONSTRAINT_num unique (Num, Kurs, id_department)
+  constraint CONSTRAINT_num1 unique (Num, Kurs, id_department)
 )
 go
+
+create table ROOM(
+id int not null identity(1,1) primary key,
+Num numeric(3) not null,
+[Floor] numeric(2) check ([Floor]>=1 and [Floor]<=16),
+Building char(5) not null,
+Seats numeric(3) check (Seats >=1 and Seats <= 300),
+   constraint CONSTRAINT_num unique (Num, [Floor])
+)
+go
+
+create table SUBJECT(
+id int not null identity(1,1) primary key,
+Name varchar(50) not null unique
+   
+)
+go
+
+create table LECTURE_TYPE(
+id int not null identity(1,1) primary key,
+Name varchar(30) not null unique
+   
+)
+go
+
+create table LECTURE(
+id int not null identity(1,1) primary key,
+id_teacher int  unique,
+id_group int not null unique,
+id_subject int unique,
+id_room int unique,
+it_lectype int not null unique,
+[Week] numeric(1) not null ,
+Day_week char(3) not null check ( Day_week = 'пнд' or 
+Day_week = 'втр' or
+Day_week = 'срд' or
+Day_week = 'чтв' or
+Day_week = 'птн' or
+Day_week = 'сбт' or
+Day_week = 'вос'),
+Lesson numeric(1) not null check (Lesson>=1 and Lesson<= 8),
+constraint KEY_lectype foreign key(it_lectype) references LECTURE_TYPE (id) ,
+constraint KEY_room foreign key(id_room) references ROOM (id)  ON DELETE SET NULL ,
+constraint KEY_sub foreign key(id_subject) references SUBJECT (id)  ON DELETE SET NULL ,
+ constraint KEY_TEAC1 foreign key(id_teacher) references TEACHER (id)  ON DELETE SET NULL ,
+ constraint KEY_SGR foreign key(id_group) references SGROUP(id)   on delete cascade  ,
+  constraint CONSTRAINT_day unique (id_teacher, [Week], Day_week,Lesson),
+  constraint CONSTRAINT_group unique (id_group, Lesson, id_subject),
+   constraint CONSTRAINT_room unique (id_room ,[Week], Day_week, Lesson)
+)
+go
+
 
