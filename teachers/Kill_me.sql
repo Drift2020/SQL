@@ -34,19 +34,19 @@ go
 
 create table POST(
 id int not null identity(1,1) primary key,
-Name VARCHAR(20) unique 
+Name VARCHAR(20) unique check(Name in('профессор','доцент','преподаватель','ассистент')) 
 )
 go
 
 create table TEACHER(
 id int not null identity(1,1) primary key,
-id_department int not null unique,
+id_department int not null unique,--unique
 Name varchar(30) not null,
-IDCode char (10) unique,
+IDCode char (10) unique(IDCode,id),
 id_post int unique,
 Tel char(7),
 Salary numeric(6,2),
-Rise NUMERIC(6,2) ,
+Rise NUMERIC(6,2) check (Rise>=0),
 HireDate DATETIME,
 Chief int unique,
 constraint KEY_DEP foreign key(id_department) references DEPARTMENT (id),
@@ -76,7 +76,7 @@ go
 
 create table ROOM(
 id int not null identity(1,1) primary key,
-Num numeric(3) not null,
+Num numeric(3) not null unique (Num,Building),
 [Floor] numeric(2) check ([Floor]>=1 and [Floor]<=16),
 Building char(5) not null,
 Seats numeric(3) check (Seats >=1 and Seats <= 300),
@@ -93,7 +93,7 @@ go
 
 create table LECTURE_TYPE(
 id int not null identity(1,1) primary key,
-Name varchar(30) not null unique
+Name varchar(30) not null unique check (Name in('лекция','лабораторная работа','практика','семинар'))
    
 )
 go
@@ -105,7 +105,7 @@ id_group int not null unique,
 id_subject int unique,
 id_room int unique,
 it_lectype int not null unique,
-[Week] numeric(1) not null ,
+[Week] numeric(1) not null check ([Week]=1 or [Week]=2) ,
 Day_week char(3) not null check ( Day_week = 'пнд' or 
 Day_week = 'втр' or
 Day_week = 'срд' or
@@ -120,7 +120,7 @@ constraint KEY_sub foreign key(id_subject) references SUBJECT (id)  ON DELETE SE
  constraint KEY_TEAC1 foreign key(id_teacher) references TEACHER (id)  ON DELETE SET NULL ,
  constraint KEY_SGR foreign key(id_group) references SGROUP(id)   on delete cascade  ,
   constraint CONSTRAINT_day unique (id_teacher, [Week], Day_week,Lesson),
-  constraint CONSTRAINT_group unique (id_group, Lesson, id_subject),
+  constraint CONSTRAINT_group unique (id_group, Lesson,Day_week,[Week], id_subject),
    constraint CONSTRAINT_room unique (id_room ,[Week], Day_week, Lesson)
 )
 go

@@ -10,6 +10,7 @@ INSERT INTO FACULTY (id, Name, Dean, Building, Fund)
 VALUES (3, 'математика', 'Игнатов', '3', 23000);
 
 GO
+SET IDENTITY_INSERT [dbo].[FACULTY] OFF
 SET IDENTITY_INSERT [dbo].[DEPARTMENT] ON
 
 GO
@@ -27,7 +28,7 @@ VALUES (5, 2, 'лингвистика', 'Коробов', '3', 14100);
 INSERT INTO DEPARTMENT(id, id_faculty, Name, Head, Building, Fund) 
 VALUES (6, 2, 'базы данных', 'Тараненко', '5', 27000);
 GO
-
+SET IDENTITY_INSERT [dbo].[DEPARTMENT] OFF
 SET IDENTITY_INSERT [dbo].[POST] ON
 
 GO
@@ -37,7 +38,7 @@ insert into post(id,name) values(2,'доцент');
 insert into post(id,name) values(3,'преподаватель');
 insert into post(id,name) values(4,'ассистент');
 GO
-
+SET IDENTITY_INSERT [dbo].[POST] OFF
 SET IDENTITY_INSERT [dbo].[TEACHER] ON
 
 GO
@@ -75,6 +76,7 @@ INSERT INTO TEACHER (id, id_department, Name, IDCode, id_Post, Tel, Salary, Rise
 VALUES (15, NULL, 'Дараганов',NULL, 3, 3456789, 570, 250, '11.07.1998',NULL);
 
 GO
+SET IDENTITY_INSERT [dbo].[TEACHER] OFF
 SET IDENTITY_INSERT [dbo].[SGROUP] ON
 
 GO
@@ -92,6 +94,7 @@ INSERT INTO SGROUP (id, id_department, Num, Kurs, Quantity, Rating, id_teacher)
 VALUES (5, 3, 201,2, 35, 43, NULL);
 
 GO
+SET IDENTITY_INSERT [dbo].[SGROUP] OFF
 SET IDENTITY_INSERT [dbo].[ROOM] ON
 
 GO
@@ -112,7 +115,7 @@ VALUES (6, 104, 1, 6, 25);
 INSERT INTO Room (id, Num, Floor, Building, Seats)
 VALUES (7, 110, 1, 6, 40);
 GO
-
+SET IDENTITY_INSERT [dbo].[ROOM] OFF
 SET IDENTITY_INSERT [dbo].[SUBJECT] ON
 
 GO
@@ -133,7 +136,7 @@ INSERT INTO Subject (id, Name)
 VALUES (7, 'теория права');
 
 GO
-
+SET IDENTITY_INSERT [dbo].[SUBJECT] OFF
 SET IDENTITY_INSERT [dbo].[LECTURE_TYPE] ON
 
 GO
@@ -145,6 +148,7 @@ insert into lecture_type (id,name) values(4,'семинар');
 
 
 GO
+SET IDENTITY_INSERT [dbo].[LECTURE_TYPE] OFF
 SET IDENTITY_INSERT [dbo].[LECTURE] ON
 GO
 
@@ -194,5 +198,5 @@ INSERT INTO LECTURE (id,id_teacher, id_group, id_subject, id_room, it_lectype, W
 VALUES (21,10, 1, 6, 2, 1, 2, 'птн', 1);
 INSERT INTO LECTURE (id,id_teacher, id_group, id_subject, id_room, it_lectype, Week, Day_week, Lesson)
 VALUES (22,3, 1, 2, 1, 2, 2, 'птн', 3);
-
+SET IDENTITY_INSERT [dbo].[LECTURE] OFF
 GO
