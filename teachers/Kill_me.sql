@@ -2,7 +2,7 @@ create database Teachers
 go
 use Teachers
 create table FACULTY(
-id int not null identity(1,1) primary key,
+id int not null  primary key,
 Name varchar(30) not null unique,
 Dean varchar(20) unique,
 Building char(5),
@@ -18,7 +18,7 @@ exec sp_bindrule 'Plus_Fund', 'FACULTY.Fund'
 go
 
 create table DEPARTMENT(
-id int not null identity(1,1)  primary key ,
+id int not null   primary key ,
 id_faculty int ,
 Name varchar(30) not null, ------------------------------
 Head varchar(20),
@@ -33,22 +33,22 @@ exec sp_bindrule 'Plus_Fund', 'DEPARTMENT.Fund'
 go
 
 create table POST(
-id int not null identity(1,1) primary key,
+id int not null  primary key,
 Name VARCHAR(20) unique check(Name in('профессор','доцент','преподаватель','ассистент')) 
 )
 go
 
 create table TEACHER(
-id int not null identity(1,1) primary key,
-id_department int not null unique,--unique
+id int not null  primary key,
+id_department int unique(id, id_department) ,--unique
 Name varchar(30) not null,
-IDCode char (10) unique(IDCode,id),
-id_post int unique,
+IDCode char (10) unique(IDCode,Name),--id
+id_post int ,
 Tel char(7),
 Salary numeric(6,2),
 Rise NUMERIC(6,2) check (Rise>=0),
 HireDate DATETIME,
-Chief int unique,
+Chief int ,
 constraint KEY_DEP foreign key(id_department) references DEPARTMENT (id),
 constraint KEY_CHI foreign key(Chief) references TEACHER (id),
 constraint KEY_post foreign key(id_post) references POST (id)
@@ -61,7 +61,7 @@ exec sp_bindrule 'Plus_Fund', 'TEACHER.Salary'
 go
 
 create table SGROUP(
-id int not null identity(1,1) primary key,
+id int not null  primary key,
 id_department int ,
 Num NUMERIC(3),  ---------------------------------
 Kurs NUMERIC(1) not null check (Kurs>=1 and Kurs<=5),
@@ -75,36 +75,36 @@ id_teacher int ,
 go
 
 create table ROOM(
-id int not null identity(1,1) primary key,
+id int not null  primary key,
 Num numeric(3) not null unique (Num,Building),
 [Floor] numeric(2) check ([Floor]>=1 and [Floor]<=16),
 Building char(5) not null,
 Seats numeric(3) check (Seats >=1 and Seats <= 300),
-   constraint CONSTRAINT_num unique (Num, [Floor])
+  
 )
 go
 
 create table SUBJECT(
-id int not null identity(1,1) primary key,
+id int not null  primary key,
 Name varchar(50) not null unique
    
 )
 go
 
 create table LECTURE_TYPE(
-id int not null identity(1,1) primary key,
+id int not null  primary key,
 Name varchar(30) not null unique check (Name in('лекция','лабораторная работа','практика','семинар'))
    
 )
 go
 
 create table LECTURE(
-id int not null identity(1,1) primary key,
-id_teacher int  unique,
-id_group int not null unique,
-id_subject int unique,
-id_room int unique,
-it_lectype int not null unique,
+id int not null  primary key,
+id_teacher int,
+id_group int not null ,
+id_subject int ,
+id_room int ,
+it_lectype int not null ,
 [Week] numeric(1) not null check ([Week]=1 or [Week]=2) ,
 Day_week char(3) not null check ( Day_week = 'пнд' or 
 Day_week = 'втр' or
