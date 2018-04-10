@@ -8,25 +8,20 @@
 
 declare @rate int
 
-select anketa_rate.id_kogo ,AVG(anketa_rate.rating)
-from  anketa_rate
-group by anketa_rate.id_kogo  
-order by 1 desc
 
-
-select u.user_id, u.nick, u.age, gender.name , anketa_rate.rating
-
+select top 10 u.user_id, u.nick, u.age, gender.name , AVG(anketa_rate.rating)as[lol]
 from  anketa_rate inner join users as u inner join gender on gender.id = u.sex on anketa_rate.id_kogo= u.user_id 
- 
- select*
- from sys.systypes
+group by u.user_id, u.nick, u.age, gender.name
+order by [lol] desc
+
+ --select*
+ --from sys.systypes
+
+
 
 create type mytable as table (id int ,[sum] int)
 declare @My_table mytable
 
---insert into t2
---values(250)
---select * from t2
 declare my_rate cursor scroll  for select anketa_rate.rating,anketa_rate.id_kogo from anketa_rate -- объ€вл€ем курсор
 open my_rate -- открываем курсор, выполн€€ запрос, указанный в курсоре
 declare @id int, @sum int 
@@ -73,6 +68,9 @@ deallocate my_rate_y -- удал€ем пам€ть, выделенную под курсор
 select *
 from @My_table
 --2. ѕоказать всех пользователей с высшим образованием, которые не кур€т, не пьют и не употребл€ют наркотики.
+
+select  u.user_id, u.nick, u.age, gender.name 
+from  anketa_rate inner join users as u inner join gender on gender.id = u.sex 
 
 
 --3. —делать запрос, который позволит найти пользователей по указанным данным:
