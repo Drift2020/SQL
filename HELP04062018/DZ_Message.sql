@@ -97,7 +97,7 @@ declare @nic nvarchar(50) , @gender nvarchar(50), @min_age int ,
  set @min_age = 15
  set @max_age = 20
  set @max_hege = 200
-
+  set @min_hege = 150
 
 select u.nick, u.age, gender.name
 from  users as u inner join gender on gender.id = u.sex 
@@ -111,3 +111,11 @@ where u.nick like ('%'+@nic+'%') and
 
 
 --4. ѕоказать всех стройных голубоглазых блондинок, затем всех спортивных кареглазых брюнетов, а в конце их общее количество (UNION, одним запросом на SELECT).
+
+ 
+select u.nick, gender.name
+from  users as u inner join 
+gender on gender.id = u.sex inner join
+ eyescolor as e on e.id = u.eyes_color inner join 
+inner join figure as f 
+ where e.id = 4 and gender.id = 2
