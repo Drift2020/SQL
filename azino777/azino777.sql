@@ -41,15 +41,17 @@ fetch next from [my_money] into @balans -- забираем первую запись
 
 
 
+
+if(@balans>=10)
+begin
 set @b1 = ABS(Checksum(NewID()) % 7)
 set @b2 = ABS(Checksum(NewID()) % 7)
 set @b3 = ABS(Checksum(NewID()) % 7)
 
-if(@balans>=10)
-begin
 if (@b1=@b2 and @b2=@b3)
 begin 
 
+raiserror('|%d|%d|%d|', 0, 25,@b1,@b2,@b3)
 raiserror('Your win, %d+%d', 0, 25,@balans, @sum_win)
 set @balans  = @balans + @sum_win
 raiserror('Your ballans = %d', 0, 25,@balans)
@@ -60,6 +62,7 @@ end
 else 
 begin
 
+raiserror('|%d|%d|%d|', 0, 25,@b1,@b2,@b3)
 raiserror('Your lost, %d-%d', 0, 25,@balans, @sum_lost)
 set @balans  = @balans - @sum_lost
 raiserror('Your ballans = %d', 0, 25,@balans)
