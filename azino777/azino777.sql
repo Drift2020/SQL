@@ -35,19 +35,43 @@ go
 
 declare [my_money] cursor scroll  for select ballans.money from ballans -- объявляем курсор
 open [my_money] -- открываем курсор, выполняя запрос, указанный в курсоре
-declare @balans int, @b1 int, @b2 int , @b3 int
+declare @balans int, @b1 int, @b2 int , @b3 int,@sum_win int = 50,@sum_lost int = 10
 fetch next from [my_money] into @balans -- забираем первую запись
 
 
-select b.money
-from ballans as B
+
 
 set @b1 = ABS(Checksum(NewID()) % 7)
 set @b2 = ABS(Checksum(NewID()) % 7)
 set @b3 = ABS(Checksum(NewID()) % 7)
 
-if (@b1=@b2 and @b2=b3 )
+if(@balans>=10)
+begin
+if (@b1=@b2 and @b2=@b3)
 begin 
-print('Your win')
+
+raiserror('Your win, %d+%d', 0, 25,@balans, @sum_win)
+set @balans  = @balans + @sum_win
+raiserror('Your ballans = %d', 0, 25,@balans)
+
+UPDATE ballans SET money = @balans WHERE ballans.id=1;
+
 end
+else 
+begin
+
+raiserror('Your lost, %d-%d', 0, 25,@balans, @sum_lost)
+set @balans  = @balans - @sum_lost
+raiserror('Your ballans = %d', 0, 25,@balans)
+
+UPDATE ballans SET money = @balans WHERE ballans.id=1;
+
+end
+end
+else
+begin
+print('LOOOOL, вы все просадили, неудачник иди работай!1!!XD')
+end
+close [my_money] -- закрываем курсор
+deallocate [my_money] -- удаляем память, выделенную под курсор 
 
