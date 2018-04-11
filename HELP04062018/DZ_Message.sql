@@ -120,7 +120,7 @@ gender on gender.id = u.sex inner join
   haircolor as h on h.id = u.hair_color  inner join 
 
  figure as f on f.id  = u.my_build
- where e.id = 4 and gender.id = 2 and h.id= 1 and f.
+ where e.id = 4 and gender.id = 2 and h.id= 1 and f.id=2
 
 
  select u.nick, gender.name
