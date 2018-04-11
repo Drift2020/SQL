@@ -117,5 +117,17 @@ select u.nick, gender.name
 from  users as u inner join 
 gender on gender.id = u.sex inner join
  eyescolor as e on e.id = u.eyes_color inner join 
-inner join figure as f 
- where e.id = 4 and gender.id = 2
+  haircolor as h on h.id = u.hair_color  inner join 
+
+ figure as f on f.id  = u.my_build
+ where e.id = 4 and gender.id = 2 and h.id= 1 and f.
+
+
+ select u.nick, gender.name
+from  users as u inner join 
+gender on gender.id = u.sex inner join
+ eyescolor as e on e.id = u.eyes_color inner join
+ haircolor as h on h.id = u.hair_color
+
+ 
+ where e.id = 2 and gender.id = 1 and h.id=4
