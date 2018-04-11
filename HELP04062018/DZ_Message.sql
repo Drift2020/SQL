@@ -1,3 +1,5 @@
+
+
 -- уникальный номер страницы пользователя вконтакте
 -- ник
 -- возраст
@@ -113,7 +115,7 @@ where u.nick like ('%'+@nic+'%') and
 --4. Показать всех стройных голубоглазых блондинок, затем всех спортивных кареглазых брюнетов, а в конце их общее количество (UNION, одним запросом на SELECT).
 
  
-select u.nick, gender.name
+select u.nick, gender.name,e.name,h.name,f.name
 from  users as u inner join 
 gender on gender.id = u.sex inner join
  eyescolor as e on e.id = u.eyes_color inner join 
@@ -122,12 +124,14 @@ gender on gender.id = u.sex inner join
  figure as f on f.id  = u.my_build
  where e.id = 4 and gender.id = 2 and h.id= 1 and f.id=2
 
+ UNION 
 
- select u.nick, gender.name
+ select u.nick, gender.name, e.name,h.name,f.name
 from  users as u inner join 
 gender on gender.id = u.sex inner join
  eyescolor as e on e.id = u.eyes_color inner join
- haircolor as h on h.id = u.hair_color
+ haircolor as h on h.id = u.hair_color inner join 
+ figure as f on f.id  = u.my_build
 
  
- where e.id = 2 and gender.id = 1 and h.id=4
+ where e.id = 2 and gender.id = 1 and h.id=4 and f.id=4
