@@ -24,8 +24,30 @@ go
 use Azino777
 go
 create table ballans(
-[money] float,
+ID int not null primary key IDENTITY(1,1),
+[money] float
 )
 go
 
-declare @balans int
+
+insert into ballans (money) values (500)
+go 
+
+declare [my_money] cursor scroll  for select ballans.money from ballans -- объявляем курсор
+open [my_money] -- открываем курсор, выполняя запрос, указанный в курсоре
+declare @balans int, @b1 int, @b2 int , @b3 int
+fetch next from [my_money] into @balans -- забираем первую запись
+
+
+select b.money
+from ballans as B
+
+set @b1 = ABS(Checksum(NewID()) % 7)
+set @b2 = ABS(Checksum(NewID()) % 7)
+set @b3 = ABS(Checksum(NewID()) % 7)
+
+if (@b1=@b2 and @b2=b3 )
+begin 
+print('Your win')
+end
+
