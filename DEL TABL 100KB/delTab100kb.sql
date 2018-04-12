@@ -27,7 +27,23 @@ GROUP BY t.Name, s.Name, p.Rows
 ORDER BY t.Name
 
 
-while
+
+
+
+
+
+declare name nvarchar(200), schemaName nvarchar(200),row int,totalKB int)
+declare sizes cursor for select size from sys.master_files 
+open sizes
+fetch next from sizes into @si
+
+
+while @@FETCH_STATUS = 0 
+begin
+print ('hi')
+
+set @i=@i+1
+end
 
 
 
