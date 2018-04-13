@@ -64,10 +64,10 @@ print('nooo палиндром')
 --я так нежен,  ат€.
 --Nurse, I spy gypsies run!
 
---4. ѕосчитать, сколько раз заданное слово содержитс€ в строке.
+--4. ѕосчитать, сколько раз заданное слово содержитс€ в строке. not
 
 declare @str5 nvarchar(200), @symbvol5 nvarchar(200)
-set @str5 = 'Nurrunse, I spy gypsies run'
+set @str5 = 'Nurse, I spy gypsies run'
 set @symbvol5 = 'run'
 
   declare @i5 int =-1, @count5 int =0
@@ -77,7 +77,7 @@ set @symbvol5 = 'run'
   while  @i5 <> 0
   begin
    set @i5 = CHARINDEX(@symbvol5,@str5,@i5+1)
-	if(@i5 <> 0 and (CHARINDEX(@symbvol5,' ',@i5+len(@str5)) <> 0 or CHARINDEX(@symbvol5,' ',@i5-1) <> 0))
+	if(@i5 <> 0 )
 	 begin
 
 	  set @count5=@count5+1
