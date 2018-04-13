@@ -2,8 +2,20 @@
 
 declare @str nvarchar(200), @symbvol nvarchar(200)
 
+go
 
-while
+CREATE FUNCTION testF(@n1  nvarchar(200), @n2 nvarchar)
+RETURNS int
+AS
+BEGIN
+  declare @i int =0
+  if (=NULL)
+	return 0
+  else
+
+
+
+END
 
 
 --2. Подсчитать количество слов во введённом предложении.
