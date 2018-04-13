@@ -2,23 +2,30 @@
 
 declare @str nvarchar(200), @symbvol nvarchar(200)
 
-go
+set @str = 'asdfghjf'
+set @symbvol = 'f'
 
-CREATE FUNCTION testF(@n1  nvarchar(200), @n2 nvarchar)
-RETURNS int
-AS
-BEGIN
-  declare @i int =0
-  if (=NULL)
-	return 0
-  else
+  declare @i int =-1, @count int =0
+  
 
 
+  while  @i <> 0  
+  begin
+   set @i = CHARINDEX(@symbvol,@str,@i+1)
+	if(@i <> 0)
+	 begin
 
-END
+	  set @count=@count+1
+	  raiserror('Indecs - %d', 0, 25,@i)
 
+	 end 
+  end
+
+  raiserror('count - %d', 0, 25,@count)
 
 --2. Подсчитать количество слов во введённом предложении.
+
+
 
 --3. Определить, является ли строка палиндромом. Примеры палиндромов:
 
