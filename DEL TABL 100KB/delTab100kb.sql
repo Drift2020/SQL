@@ -60,7 +60,7 @@ end
 close [table_my]-- закрываем курсор
 deallocate [table_my] -- удаляем память, выделенную под курсор
 
-
+--https://msdn.microsoft.com/ru-ru/library/ms188776(v=sql.120).aspx
 
 
 
