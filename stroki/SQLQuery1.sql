@@ -77,7 +77,7 @@ set @symbvol5 = 'run'
   while  @i5 <> 0
   begin
    set @i5 = CHARINDEX(@symbvol5,@str5,@i5+1)
-	if(@i5 <> 0 and (CHARINDEX(@symbvol5,@str5,@i5+len(@str5)) <> 0 or CHARINDEX(@symbvol5,@str5,@i5-1) <> 0))
+	if(@i5 <> 0 and (CHARINDEX(@symbvol5,' ',@i5+len(@str5)) <> 0 or CHARINDEX(@symbvol5,' ',@i5-1) <> 0))
 	 begin
 
 	  set @count5=@count5+1
