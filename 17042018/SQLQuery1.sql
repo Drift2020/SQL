@@ -31,13 +31,60 @@ exec Book_chose
 --указанному в 5-м параметре, в направлении, указанном в 6-м параметре (sp_executesql).
 go
 
-CREATE PROCEDURE Book_select @Autors_Name nvarchar(255),@Autors_Surname nvarchar(255),@Themes nvarchar(255),@Categories nvarchar(255),@NumberPoles int, AS
+CREATE PROCEDURE Book_select @Autors_Name nvarchar(255),@Autors_Surname nvarchar(255),@Themes nvarchar(255),@Categories nvarchar(255),@NumberPoles int,@SortN int AS
 BEGIN
 
-EXEC sp_executesql @statement, N'@LabID int, @BeginDate date, @EndDate date, @RequestTypeID varchar', @LabID, @BeginDate, @EndDate, @RequestTypeID
+DECLARE @ExecStr NVARCHAR(4000);
+SELECT @ExecStr = 'select *
+from Authors inner join
+	 Books inner join 
+	 Categories on Categories.Id = Books.Id_Category on Books.Id_Author= Authors.Id 
+	 inner join Themes on Themes.Id = Books.Id_Themes
+where Authors.FirstName like @Autors_Name 
+   and Authors.LastName like @Autors_Surname
+   and Themes.Name like @Themes
+   and Categories.Name like @Categories
+   order by ';
+   
+
+  if(@NumberPoles = 1)
+  begin 
+    set @ExecStr= @ExecStr+'@Autors_Name'
+  end
+  else if(@NumberPoles = 2)
+  begin 
+    set @ExecStr= @ExecStr+'@Autors_Surname'
+  end
+  else if(@NumberPoles = 3)
+  begin 
+    set @ExecStr= @ExecStr+'@Themes'
+  end
+  else if(@NumberPoles = 4)
+  begin 
+    set @ExecStr= @ExecStr+'@Categories'
+  end
+
+  if(@SortN=1)
+  set @ExecStr = @ExecStr+' desc'
+
+EXEC sp_executesql @ExecStr, N'@Autors_Name varchar(255)', @Autors_Name,
+N'@Autors_Surname varchar(255)',@Autors_Surname
+,N'@Themes varchar(255)',@Themes,
+N'@Categories varchar(255)',@Categories;
+
 
 END;
 go
+
+
+exec Book_select 'Джеймс Р.','Грофф','Базы данных','Язык SQL',1,1
+
+
+   
+ 
+ 
+
+
 
 --3. Написать хранимую процедуру, которая показывает список библиотекарей, и количество выданных каждым из них книг.
 
