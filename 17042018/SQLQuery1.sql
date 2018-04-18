@@ -29,8 +29,15 @@ exec Book_chose
 --2. Ќаписать хранимую процедуру, показывающую список книг, отвечающих набору критериев.
 -- ритерии: им€ автора, фамили€ автора, тематика, категори€.  роме того, список должен быть отсортирован по номеру пол€
 --указанному в 5-м параметре, в направлении, указанном в 6-м параметре (sp_executesql).
+go
+
+CREATE PROCEDURE Book_select @Autors_Name nvarchar(255),@Autors_Surname nvarchar(255),@Themes nvarchar(255),@Categories nvarchar(255),@NumberPoles int, AS
+BEGIN
 
 EXEC sp_executesql @statement, N'@LabID int, @BeginDate date, @EndDate date, @RequestTypeID varchar', @LabID, @BeginDate, @EndDate, @RequestTypeID
+
+END;
+go
 
 --3. Ќаписать хранимую процедуру, котора€ показывает список библиотекарей, и количество выданных каждым из них книг.
 
