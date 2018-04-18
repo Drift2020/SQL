@@ -31,62 +31,83 @@ exec Book_chose
 --указанному в 5-м параметре, в направлении, указанном в 6-м параметре (sp_executesql).
 go
 
-CREATE PROCEDURE Book_select @Autors_Name nvarchar(255),@Autors_Surname nvarchar(255),@Themes nvarchar(255),@Categories nvarchar(255),@NumberPoles int,@SortN int AS
-BEGIN
+
+
+declare @Autors_Name nvarchar(255)
+,@Autors_Surname nvarchar(255)= 'Грофф'
+,@Themes nvarchar(255)
+,@Categories nvarchar(255)='Язык SQL'
+,@NumberPoles int=1
+,@SortN int=1 
+
+set @Autors_Name = 'Джеймс Р.'
+set @Themes='Базы данных'
 
 DECLARE @ExecStr NVARCHAR(4000);
-SELECT @ExecStr = 'select *
+set @ExecStr = 'select *
 from Authors inner join
 	 Books inner join 
 	 Categories on Categories.Id = Books.Id_Category on Books.Id_Author= Authors.Id 
 	 inner join Themes on Themes.Id = Books.Id_Themes
-where Authors.FirstName like @Autors_Name 
-   and Authors.LastName like @Autors_Surname
-   and Themes.Name like @Themes
-   and Categories.Name like @Categories
+where Authors.FirstName like '''+@Autors_Name +'''
+   and Authors.LastName like '''+@Autors_Surname+'''
+   and Themes.Name like '''+@Themes+'''
+   and Categories.Name like '''+@Categories+'''
    order by ';
    
-
+   print (@ExecStr)
   if(@NumberPoles = 1)
   begin 
-    set @ExecStr= @ExecStr+'@Autors_Name'
+    set @ExecStr= @ExecStr+'Authors.FirstName'
   end
   else if(@NumberPoles = 2)
   begin 
-    set @ExecStr= @ExecStr+'@Autors_Surname'
+    set @ExecStr= @ExecStr+'Authors.LastName'
   end
   else if(@NumberPoles = 3)
   begin 
-    set @ExecStr= @ExecStr+'@Themes'
+    set @ExecStr= @ExecStr+'Themes.Name'
   end
   else if(@NumberPoles = 4)
   begin 
-    set @ExecStr= @ExecStr+'@Categories'
+    set @ExecStr= @ExecStr+'Categories.Name'
   end
 
   if(@SortN=1)
   set @ExecStr = @ExecStr+' desc'
 
-EXEC sp_executesql @ExecStr, N'@Autors_Name varchar(255)', @Autors_Name,
-N'@Autors_Surname varchar(255)',@Autors_Surname
-,N'@Themes varchar(255)',@Themes,
-N'@Categories varchar(255)',@Categories;
+EXEC sp_executesql @ExecStr
 
 
-END;
 go
 
 
-exec Book_select 'Джеймс Р.','Грофф','Базы данных','Язык SQL',1,1
-
-
-   
  
  
 
 
 
 --3. Написать хранимую процедуру, которая показывает список библиотекарей, и количество выданных каждым из них книг.
+
+
+USE LibrarySQL;
+GO
+CREATE PROCEDURE Book_libres AS
+BEGIN
+
+  
+select Libs.FirstName,Libs.LastName,count(Books.Id)
+from  Libs inner join T_Cards inner join Books
+on Books.Id = T_Cards.Id_Book 
+on T_Cards.Id_Lib = Libs.Id
+
+
+inner join S_Cards on Books.Id = S_Cards.Id_Book on 
+
+
+
+END;
+go
 
 --4. Создать хранимую процедуру, которая покажет имя и фамилию студента, набравшего наибольшее количество книг.
 
