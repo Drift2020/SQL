@@ -97,13 +97,11 @@ BEGIN
 
   
 select Libs.FirstName,Libs.LastName,count(Books.Id)
-from  Libs inner join T_Cards inner join Books
+from S_Cards inner join Libs inner join T_Cards inner join Books 
 on Books.Id = T_Cards.Id_Book 
-on T_Cards.Id_Lib = Libs.Id
-
-
-inner join S_Cards on Books.Id = S_Cards.Id_Book on 
-
+on T_Cards.Id_Lib = Libs.Id on Libs.Id = S_Cards.Id_Lib inner join Books as b on S_Cards.Id_Book=b.Id
+ 
+group by  Libs.FirstName,Libs.LastName
 
 
 END;
@@ -111,4 +109,26 @@ go
 
 --4. Создать хранимую процедуру, которая покажет имя и фамилию студента, набравшего наибольшее количество книг.
 
+USE LibrarySQL;
+GO
+CREATE PROCEDURE Book_student AS
+BEGIN
 
+  
+WITH Tabl AS  ( select count(Books.Id) as coun, Students.Id as ID
+				from Students inner join S_Cards inner join Books 
+				on Books.Id=S_Cards.Id_Book 
+				on S_Cards.Id_Student = Students.Id
+				group by Students.Id
+			   ) 
+
+select Students.FirstName,Students.LastName,Tabl.coun
+from Students inner join Tabl 
+on Tabl.ID = Students.Id
+where Tabl.coun = ( select max(Tabl.coun)as maxs
+					from Tabl)
+
+
+
+END;
+go
