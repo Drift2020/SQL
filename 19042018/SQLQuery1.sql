@@ -8,12 +8,9 @@ ON S_Cards
 AFTER insert
 AS
 
-DECLARE @id INT
-SELECT @id = Id_Book 
-FROM INSERTED
-
 update Books set Quantity = Quantity-1
-where  Books.Id = @id
+where id in (select id from  inserted)
+
 
 go
 
@@ -23,14 +20,14 @@ go
 
 CREATE TRIGGER Select_book_is_null
 ON S_Cards 
-INSTEAD OF insert
+after insert
 AS
 
 if exists( select * from books inner join S_Cards on S_Cards.Id_Book=Books.Id where Quantity < 1)
 begin
 
 delete from S_Cards
-where id = (select id from books inner join inserted on books.Id=inserted.Id_Book where books.Quantity<1 )
+where id in (select id from books inner join inserted on books.Id=inserted.Id_Book where books.Quantity<1 )
 
 end 
 go
@@ -86,6 +83,16 @@ go
 
 --5. нельз€ выдать книгу студенту, если прошлую книгу он читал дольше двух мес€цев.
 
+CREATE TRIGGER Delete_book_date
+ON S_Cards 
+for delete
+AS
+
+
+delete Books set Quantity = Quantity+1
+where id in (select id from  deleted)
+
+go
 
 
 --6. если студента зовут јлександр, он получает 2 экземпл€ра книги вместо одного
