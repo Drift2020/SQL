@@ -83,19 +83,50 @@ go
 
 --5. нельзя выдать книгу студенту, если прошлую книгу он читал дольше двух месяцев.
 
+
 CREATE TRIGGER Delete_book_date
 ON S_Cards 
 for insert
 AS
 
+declare table_con cursor scroll  for select Id_Student,Id from inserted -- объявляем курсор
+open table_con -- открываем курсор, выполняя запрос, указанный в курсоре
+declare @idSTUD int, @idCards int
+fetch next from table_con into @idSTUD ,@idCards-- забираем первую запись
 
-delete from inserted inner join S_Cards on
-where Id_Student in (select Id_Student,max(DateOut)
-					 from S_Cards
-					 where GETDATE()-DateOut > 2
-					 group by Id_Student
-					 )
 
+
+
+
+create table #ttables 
+( 
+id int,
+id_stud int,
+[date] datetime 
+) 
+
+insert into #ttables 
+select id as ID , Id_Student as ID_S,max(DateOut)as [date]
+from S_Cards
+where GETDATE()-DateOut > 2
+group by Id_Student,ID
+
+declare table_con1 cursor scroll  for select id,id_stud from #ttables -- объявляем курсор
+open table_con -- открываем курсор, выполняя запрос, указанный в курсоре
+declare @idSTUD1 int, @idCards1 int
+fetch next from table_con1 into @idCards1,@idSTUD1-- забираем первую запись
+
+
+
+while @@FETCH_STATUS = 0 
+begin
+
+delete from S_Cards 
+where @idCards1 = @idCards2 and @idSTUD1=
+
+end
+
+drop table #ttables
 go
 
 
