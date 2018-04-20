@@ -85,12 +85,16 @@ go
 
 CREATE TRIGGER Delete_book_date
 ON S_Cards 
-for delete
+for insert
 AS
 
 
-delete Books set Quantity = Quantity+1
-where id in (select id from  deleted)
+delete from inserted inner join S_Cards on
+where Id_Student in (select Id_Student,max(DateOut)
+					 from S_Cards
+					 where GETDATE()-DateOut > 2
+					 group by Id_Student
+					 )
 
 go
 
@@ -98,7 +102,21 @@ go
 --6. если студента зовут Александр, он получает 2 экземпляра книги вместо одного
 --(если конечно книги в наличии)
 
+CREATE TRIGGER Upi
+ON S_Cards 
+for insert
+AS
 
+insert into S_Cards (money) values (500)
+from S_Cards 
+where Id_Student in (
+					 select Id_Student,LastName
+					 from S_Cards inner join Students on students.Id = S_Cards.Id_Student
+					 where students.FirstName like 'Александр'
+				
+					 )
+
+go
 
 
 --7. если в наличии нет книги, которую хочет взять преподаватель, выдать ему одну случайную книгу.
