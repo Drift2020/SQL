@@ -89,15 +89,6 @@ ON S_Cards
 for insert
 AS
 
-declare table_con cursor scroll  for select Id_Student,Id from inserted -- объявляем курсор
-open table_con -- открываем курсор, выполняя запрос, указанный в курсоре
-declare @idSTUD int, @idCards int
-fetch next from table_con into @idSTUD ,@idCards-- забираем первую запись
-
-
-
-
-
 create table #ttables 
 ( 
 id int,
@@ -111,20 +102,10 @@ from S_Cards
 where GETDATE()-DateOut > 2
 group by Id_Student,ID
 
-declare table_con1 cursor scroll  for select id,id_stud from #ttables -- объявляем курсор
-open table_con -- открываем курсор, выполняя запрос, указанный в курсоре
-declare @idSTUD1 int, @idCards1 int
-fetch next from table_con1 into @idCards1,@idSTUD1-- забираем первую запись
-
-
-
-while @@FETCH_STATUS = 0 
-begin
 
 delete from S_Cards 
-where @idCards1 = @idCards2 and @idSTUD1=
+where Id_Student in (select id_stud from #ttables) and DateOut in (select [date] from #ttables)
 
-end
 
 drop table #ttables
 go
@@ -138,21 +119,27 @@ ON S_Cards
 for insert
 AS
 
-insert into S_Cards (money) values (500)
-from S_Cards 
-where Id_Student in (
-					 select Id_Student,LastName
-					 from S_Cards inner join Students on students.Id = S_Cards.Id_Student
-					 where students.FirstName like 'Александр'
-				
-					 )
+declare table_con cursor scroll  for select Id_Student,Id_Book, DateOut, DateIn,Id_Lib from inserted -- объявляем курсор
+open table_con -- открываем курсор, выполняя запрос, указанный в курсоре
+declare @Id_Student int,@Id_Book int, @DateOut datetime, @DateIn datetime,@Id_Lib int
+
+fetch next from table_con into @Id_Student ,@Id_Book,@DateOut,@DateIn,@Id_Lib
+
+while @@FETCH_STATUS = 0 
+begin
+
+if(@Id_Student in (select id from Students where FirstName like 'Александр'))
+begin
+INSERT INTO S_Cards (Id_Student, Id_Book, DateOut, DateIn,Id_Lib) 
+VALUES ( @Id_Student, @Id_Book, @DateOut, @Id_Lib)
+end
+end
 
 go
 
 
 --7. если в наличии нет книги, которую хочет взять преподаватель, выдать ему одну случайную книгу.
 --если книги закончились вообще, выдать сообщение об этом.
-
 
 
 
