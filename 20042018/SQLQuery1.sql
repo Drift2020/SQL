@@ -1,37 +1,35 @@
+
+
+
 --1. написать функцию, которая покажет список всех пользовательских баз данных SQL Server,
 --и их общие размеры в Б.
 
+CREATE FUNCTION dbo.tables()  
+RETURNS TABLE  
+AS  
+RETURN  	
+	(select sysdatabases.name , size*8 as size
+	from sys.master_files inner join  master.dbo.sysdatabases  on database_id = dbid
+	WHERE dbid > 4 and type_desc like 'ROWS' );
+ 
+ 
+go
 
 --2. написать функцию, которая покажет список всех таблиц базы данных,
 --название которой передано как параметр, количество записей в каждой из таблиц,
 --и общий размер каждой таблицы в байтах.
 
---3. написать функцию, которая покажет список всех полей определённой таблицы,
---имя которой передаётся как параметр.
---если есть несколько одноимённых таблиц (в разных БД) - показать информацию по каждой таблице.
---кроме названия поля указать его тип, поддержку нулевых значений
---и перечень всех констреинтов (через запятую в одном поле).
 
---4. написать функцию, которая покажет количество приконнекченых к серверу пользователей.
-
-
-
-
---Показать список всех таблиц определённой базы данных,
---количество записей в каждой из таблиц,
---и общий размер каждой таблицы в байтах.
-
---Удалить все таблицы:
--- размер которых меньше 100КБ
--- либо в которых нет записей
-----------------------------------------
-
-
-
-declare  @table table(name nvarchar(200), schemaName nvarchar(200),row int,totalKB int);
+CREATE FUNCTION dbo.tables_select(@name nvarchar(max))  
+RETURNS   @table TABLE (name nvarchar(200), schemaName nvarchar(200),row int,totalKB int)
+AS  
+  	
+begin
 
 insert @table
-SELECT  t.NAME AS TableName, s.Name AS SchemaName, p.rows AS RowCounts, 
+
+
+SELECT  t.NAME AS TableName, s.Name AS SchemaName, p.rows AS RowCounts , 
 SUM(a.total_pages) * 8 AS TotalSpaceKB
 FROM sys.tables t INNER JOIN      
      sys.indexes i ON t.OBJECT_ID = i.object_id INNER JOIN 
@@ -45,127 +43,33 @@ WHERE
 GROUP BY t.Name, s.Name, p.Rows
 ORDER BY t.Name
 
-
-
-
-
-
-declare [table_my] cursor for select name,row,totalKB from  @table   -- объявляем курсор
-open [table_my] -- открываем курсор, выполняя запрос, указанный в курсоре
-
-
-declare @name nvarchar(200),@row int,@totalKB int
-fetch next from [table_my] into @name,@row,@totalKB
-declare @statement nvarchar(200)
-
-while @@FETCH_STATUS = 0 
-begin
-
-	if @totalKB<100
-		begin
-			raiserror('%s-%d-%d-DELETE', 0, 25, @name,@row,@totalKB)
-
-			--set @statement = 'DROP TABLE ' +@name
-			--exec sp_executesql @statement
-
-		end
-	else
-		begin 
-			raiserror('%s-%d-%d', 0, 25, @name,@row,@totalKB)
-		end
-	fetch next from [table_my] into @name,@row,@totalKB
+RETURN
 end
-
-close [table_my]-- закрываем курсор
-deallocate [table_my] -- удаляем память, выделенную под курсор
-
-
---declare  @STR1 nvarchar(max);
---declare gc cursor for select name from  sys.master_files   -- объявляем курсор
---open gc -- открываем курсор, выполняя запрос, указанный в курсоре
-
---declare @gname nvarchar(50)
  
----- SELECT name, size*1.0/128 AS[Size in MBs]  
-----FROM sys.master_files 
+go
+select *
+from  dbo.tables_select('LibrarySQL')  
+go
 
---declare @si int
---declare sizes cursor for select size from sys.master_files 
---open sizes
---fetch next from sizes into @si
+drop FUNCTION dbo.tables_select
 
-
---while @@FETCH_STATUS = 0 
---begin
+go
 
 
---raiserror('%d-%s', 0, 25, @si,@gname)
-
---if ( @si*1.0/128 < 1 and @gname!='master')
---begin
-
---	print @gname -- выводим значение временной переменной
-	
---	-- забираем следующую запись
---	--set @STR1= 'Drop database '+@gname
---	--exec sp_sqlexec @gname
-
---end
---fetch next from sizes into @si
---fetch next from gc into @gname	
-
---end
-
---close gc 
---close sizes-- закрываем курсор
---deallocate gc -- удаляем память, выделенную под курсор
---deallocate sizes
+--3. написать функцию, которая покажет список всех полей определённой таблицы,
+--имя которой передаётся как параметр.
+--если есть несколько одноимённых таблиц (в разных БД) - показать информацию по каждой таблице.
+--кроме названия поля указать его тип, поддержку нулевых значений
+--и перечень всех констреинтов (через запятую в одном поле).
 
 
 
 
------------------------------------------------------------------
 
-
-declare @numner int =0, @status int=3, @STR1 nvarchar(max);
-declare gc cursor for select name from  sys.master_files   -- объявляем курсор
-open gc -- открываем курсор, выполняя запрос, указанный в курсоре
-
-declare @gname nvarchar(50) -- создаем временную переменную для хранения результатов
- -- забираем первую запись
-
- 
--- SELECT name, size*1.0/128 AS[Size in MBs]  
---FROM sys.master_files 
-
-declare @si int
-declare sizes cursor for select size from sys.master_files 
-open sizes
-fetch next from sizes into @si
-
-
-while @@FETCH_STATUS = 0 
-begin
-
-if((@numner%4=0and @gname!='master' and @status=1 )
- or (@gname!='master' and @status=2 and (CHARINDEX('a', @gname)!= 0 or CHARINDEX('A', @gname)!=0 )) 
-or ( @si*1.0/128 < 1 and @gname!='master' and @status=3))
-begin
-
-	print @gname -- выводим значение временной переменной
-	
-	-- забираем следующую запись
-	--set @STR1= 'Drop database '+@gname
-	--exec sp_sqlexec @gname
-
-end
-fetch next from sizes into @si
-fetch next from gc into @gname	
-set @numner= @numner+1
-end
-
-close gc 
-close sizes-- закрываем курсор
-deallocate gc -- удаляем память, выделенную под курсор
-deallocate sizes
-
+--4. написать функцию, которая покажет количество приконнекченых к серверу пользователей.
+CREATE FUNCTION dbo.users_conect()  
+RETURNS TABLE  
+AS  
+RETURN  
+(select count(DISTINCT  loginame) as [count]
+from   sys.sysprocesses)
