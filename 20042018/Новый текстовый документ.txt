@@ -1,0 +1,74 @@
+
+
+
+--1. написать функцию, которая покажет список всех пользовательских баз данных SQL Server,
+--и их общие размеры в Б.
+
+CREATE FUNCTION dbo.tables()  
+RETURNS TABLE  
+AS  
+RETURN  	
+	(select sysdatabases.name , size*8 as size
+	from sys.master_files inner join  master.dbo.sysdatabases  on database_id = dbid
+	WHERE dbid > 4 and type_desc like 'ROWS' );
+ 
+ 
+go
+
+--2. написать функцию, которая покажет список всех таблиц базы данных,
+--название которой передано как параметр, количество записей в каждой из таблиц,
+--и общий размер каждой таблицы в байтах.
+
+
+CREATE FUNCTION dbo.tables_select(@name nvarchar(max))  
+RETURNS   @table TABLE (name nvarchar(200), schemaName nvarchar(200),row int,totalKB int)
+AS  
+  	
+begin
+
+insert @table
+
+
+SELECT  t.NAME AS TableName, s.Name AS SchemaName, p.rows AS RowCounts , 
+SUM(a.total_pages) * 8 AS TotalSpaceKB
+FROM sys.tables t INNER JOIN      
+     sys.indexes i ON t.OBJECT_ID = i.object_id INNER JOIN 
+     sys.partitions p ON i.object_id = p.OBJECT_ID AND i.index_id = p.index_id INNER JOIN 
+     sys.allocation_units a ON p.partition_id = a.container_id LEFT OUTER JOIN 
+     sys.schemas s ON t.schema_id = s.schema_id
+WHERE 
+    t.NAME NOT LIKE 'dt%' 
+    AND t.is_ms_shipped = 0
+    AND i.OBJECT_ID > 255 
+GROUP BY t.Name, s.Name, p.Rows
+ORDER BY t.Name
+
+RETURN
+end
+ 
+go
+select *
+from  dbo.tables_select('LibrarySQL')  
+go
+
+drop FUNCTION dbo.tables_select
+
+go
+
+
+--3. написать функцию, которая покажет список всех полей определённой таблицы,
+--имя которой передаётся как параметр.
+--если есть несколько одноимённых таблиц (в разных БД) - показать информацию по каждой таблице.
+--кроме названия поля указать его тип, поддержку нулевых значений
+--и перечень всех констреинтов (через запятую в одном поле).
+
+
+--сделать просто запрос получается, а вот функцию, что-то не вышло
+
+--4. написать функцию, которая покажет количество приконнекченых к серверу пользователей.
+CREATE FUNCTION dbo.users_conect()  
+RETURNS TABLE  
+AS  
+RETURN  
+(select count(DISTINCT  loginame) as [count]
+from   sys.sysprocesses)

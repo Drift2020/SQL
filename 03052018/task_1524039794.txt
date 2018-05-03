@@ -1,0 +1,4 @@
+standard and user data types list in USP / UDF
+
+standard and user error messages list in USP / UDF
+
